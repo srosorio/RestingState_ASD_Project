@@ -116,7 +116,8 @@ def get_diagnosis(subject):
     comments = []
     if any(csvfile['diagnosis_flag_details'][csvfile['subject_id'] == subject].dropna().tolist() + 
            csvfile['prescreen_survey_diagnosiscomments'][csvfile['subject_id'] == subject].dropna().tolist()):
-        comments.append(csvfile['diagnosis_flag_details'][csvfile['subject_id'] == subject].dropna().tolist() + csvfile['prescreen_survey_diagnosiscomments'][csvfile['subject_id'] == subject].dropna().tolist())
+        comments.append(csvfile['diagnosis_flag_details'][csvfile['subject_id'] == subject].dropna().tolist() + 
+                        csvfile['prescreen_survey_diagnosiscomments'][csvfile['subject_id'] == subject].dropna().tolist())
     return diagnosis, other_dx, comments
 
 def get_age(subject, visits):
@@ -178,9 +179,9 @@ def get_iq(subject, visits):
         dates = list(set(dates))
         vals  = list(set(vals))
         if len(dates) != len(vals):
-            if subject == '013001':
+            if subject == 'SUBID':
                 dates = dates[0]
-            elif '9000' in subject:
+            elif 'SUBSTR' in subject:
                 dates = ['2016-09-20'] + dates
     ver = pd.DataFrame({'iq_dov' : dates, 'iq_vals' : vals})
 
@@ -201,7 +202,7 @@ def get_iq(subject, visits):
         if len(dates) != len(vals):
             if subject == 'ID5':
                 dates = dates[0]
-            if '9000' in subject:
+            if 'SUBSTR' in subject:
                 dates = ['2016-09-20'] + dates
     nover = pd.DataFrame({'iq_dov' : dates, 'iq_vals' : vals})
 
