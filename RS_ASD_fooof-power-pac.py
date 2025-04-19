@@ -54,7 +54,7 @@ if not exists(join(project_dir,'data.csv')) or redo:
 
             # get subject and visit info
             subject    = sub_i
-            visits     = [i for i in listdir(join(data_dir,sub_i.replace('9000','0AC0'))) if 'visit' in i]
+            visits     = [i for i in listdir(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'))) if 'visit' in i]
             diagnosis,others,dx_comments = hf.get_diagnosis(subject)
             age_at_meg = hf.get_age(subject, visits)
             sub_sex    = hf.get_sex(subject)
@@ -74,8 +74,8 @@ if not exists(join(project_dir,'data.csv')) or redo:
                     continue
 
                 # load files
-                epo_file  = glob(join(data_dir,sub_i.replace('9000','0AC0'),visit_i,'*nobaseline_resting_epo.fif'))
-                raw_files = glob(join(data_dir,sub_i.replace('9000','0AC0'),visit_i,'*fix*ss.fif'))
+                epo_file  = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'*nobaseline_resting_epo.fif'))
+                raw_files = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'*fix*ss.fif'))
 
                 if epo_file:
 
@@ -227,7 +227,8 @@ if not exists(join(project_dir,'data.csv')) or redo:
                             # get envelope of hilbert transform 
                             raw_sss = raw_sss.apply_hilbert(envelope=True)
                             signal  = np.expand_dims(np.mean(raw_sss.get_data(), axis=0), axis=1)
-                            # get functional EI value
+
+                            # get functional EI value for 5, 8 and 10 seconds
                             EI_five, _, _  = hf.calculate_fei(signal, (250*5), 0.5)
                             EI_eight, _, _ = hf.calculate_fei(signal, (250*8), 0.5)
                             EI_ten, _, _   = hf.calculate_fei(signal, (250*10), 0.5)
