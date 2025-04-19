@@ -54,9 +54,10 @@ if not exists(join(project_dir,'data.csv')) or redo:
                     reject_visit = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'DONT_USE_THIS_VISIT.txt'))
                     if bool(reject_visit):
                         continue                
+
                     # load epoch files
                     epo_file = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'*nobaseline_resting_epo.fif'))
-                    raw_file = raw_files = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'*fix*ss.fif'))
+                    raw_file = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'*fix*ss.fif'))
                     raw_erm  = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'*erm*ss.fif'))
                     
                     if epo_file:
@@ -188,16 +189,12 @@ if not exists(join(project_dir,'data.csv')) or redo:
 
                         # load raw and erm files
                         raw_sss = mne.io.read_raw_fif(raw_file[0], preload=True)
-                        raw_erm = mne.io.read_raw_fif(glob(join(data_dir,sub_i.replace('SUBSTR1','SBSTR2'),visit_i,'*erm*ss.fif'))[0], preload=True)
 
                         # filter raw file
                         raw_sss = raw_sss.pick('grad').filter(8, 12).resample(250)
                         raw_sss = raw_sss.apply_hilbert(envelope=True)
 
-                        # compute the noise covariance matrix from the empty room recording
-                        noise_cov = mne.compute_raw_covariance(raw_erm, tmin=0, tmax=None, verbose=None) 
-
-                        # compute the forward solution and inverser operator
+                        # compute the forward solution and inverser operator(this time for the continuous data, not the epochs)
                         fwd_file = glob(join(data_dir,sub_i.replace('SUBSTR1','SUBSTR2'),visit_i,'*fwd.fif'))  
                         fwd      = mne.read_forward_solution(fwd_file[0]) 
                         inv_operator = mne.minimum_norm.make_inverse_operator(raw_sss.info, fwd, noise_cov, loose=0.2, depth=0.8, rank='info', verbose=False)
@@ -213,7 +210,8 @@ if not exists(join(project_dir,'data.csv')) or redo:
                         src_from = fwd['src']        
                         # stc.plot(subject=recons_subject, subjects_dir=recons_dir, hemi='both')                
 
-                        signal  = np.expand_dims(np.mean(raw_sss.get_data(), axis=0), axis=1)   
+                        # signal  = np.expand_dims(np.mean(raw_sss.get_data(), axis=0), axis=1)   
+                        # [CODE IN PROGRESS]
 
                 else:
                     stc_peak_freq   = mne.read_source_estimate(join(project_dir,'NEWDIR',sub_i,visit_i,
